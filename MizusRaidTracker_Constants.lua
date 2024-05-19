@@ -17,6 +17,8 @@ mrt.raidSizes = { 5, 5, 10, 25, 10, 25, 25, 5, 40, 40, 3, 3, 40, 30, 30, 20, 30,
 mrt.isRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE);
 mrt.isClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC);
 mrt.isBCC = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC);
+mrt.isWotLK = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC);
+mrt.isCataclysm = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC);
 
 -- these are probably not needed anymore
 MRT_ItemColorValues = {
@@ -210,6 +212,25 @@ mrt.raidZonesBCC = {
     [534] = true,       -- The Battle for Mount Hyjal
     [568] = true,       -- Zul'Aman
     [580] = true,       -- The Sunwell
+}
+mrt.RaidZonesWotLK = {
+    [616] = true,       -- The Eye of Eternity
+    [615] = true,       -- The Obsidian Sanctum
+    [624] = true,       -- Vault of Archavon
+    [533] = true,       -- Naxxramas
+    [603] = true,       -- Ulduar
+    [649] = true,       -- Trial of the Crusader
+    [249] = true,       -- Onyxia's Lair
+    [631] = true,       -- Icecrown Citadel
+    [724] = true,       -- The Ruby Sanctum
+}
+mrt.RaidZonesCataclysm = {
+    [757] = true,       -- Baradin Hold
+    [669] = true,       -- Blackwing Descent
+    [671] = true,       -- The Bastion of Twilight
+    [754] = true,       -- Throne of the Four Winds
+    [720] = true,       -- Firelands
+    [967] = true,       -- Dragon Soul
 }
 
 MRT_PvPRaids = {
@@ -905,6 +926,7 @@ MRT_IgnoredItemIDList = {
     [45624] = true,     -- ...Conquest
     [47241] = true,     -- ...Triumph
     [49426] = true,     -- ...Frost
+	[29434] = true,		-- ...Justice										
     
     -- Gems
     [36931] = true,     -- Ametrine

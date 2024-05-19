@@ -230,9 +230,11 @@ function MRT_GUI_ParseValues()
     MRT_GUIFrame_BossLoot_Add_Button:SetText(MRT_L.GUI["Button_Add"]);
     MRT_GUIFrame_BossLoot_Add_Button:SetPoint("TOPLEFT", MRT_GUI_BossLootTable.frame, "BOTTOMLEFT", 0, -5);
     MRT_GUIFrame_BossLoot_Modify_Button:SetText(MRT_L.GUI["Button_Modify"]);
-    MRT_GUIFrame_BossLoot_Modify_Button:SetPoint("LEFT", MRT_GUIFrame_BossLoot_Add_Button, "RIGHT", 10, 0);
-    MRT_GUIFrame_BossLoot_Delete_Button:SetText(MRT_L.GUI["Button_Delete"]);
-    MRT_GUIFrame_BossLoot_Delete_Button:SetPoint("LEFT", MRT_GUIFrame_BossLoot_Modify_Button, "RIGHT", 10, 0);
+    MRT_GUIFrame_BossLoot_Modify_Button:SetPoint("LEFT", MRT_GUIFrame_BossLoot_Add_Button, "RIGHT", 5, 0);
+	MRT_GUIFrame_BossLoot_Auction_Button:SetText("Auction!!");
+    MRT_GUIFrame_BossLoot_Auction_Button:SetPoint("LEFT", MRT_GUIFrame_BossLoot_Modify_Button, "RIGHT", 5, 0);
+	MRT_GUIFrame_BossLoot_Delete_Button:SetText(MRT_L.GUI["Button_Delete"]);
+    MRT_GUIFrame_BossLoot_Delete_Button:SetPoint("LEFT", MRT_GUIFrame_BossLoot_Auction_Button, "RIGHT", 5, 0);
     MRT_GUIFrame_BossAttendees_Add_Button:SetText(MRT_L.GUI["Button_Add"]);
     MRT_GUIFrame_BossAttendees_Add_Button:SetPoint("TOPLEFT", MRT_GUI_BossAttendeesTable.frame, "BOTTOMLEFT", 0, -5);
     MRT_GUIFrame_BossAttendees_Delete_Button:SetText(MRT_L.GUI["Button_Delete"]);
@@ -281,6 +283,21 @@ function mrt:UI_CreateTwoRowDDM()
             { [3] = RAID_DIFFICULTY_10PLAYER }
         }
     elseif mrt.isBCC then
+        items = {
+            { [4] = RAID_DIFFICULTY_25PLAYER },                          -- 25 Player
+            { [3] = RAID_DIFFICULTY_10PLAYER },                          -- 10 Player
+            { [9] = RAID_DIFFICULTY_40PLAYER },                          -- 40 Player
+            { [148] = RAID_DIFFICULTY_20PLAYER },                        -- 20 Player
+        }
+        --added WotLK and Cata support here
+    elseif mrt.isWotLK then
+        items = {
+            { [4] = RAID_DIFFICULTY_25PLAYER },                          -- 25 Player
+            { [3] = RAID_DIFFICULTY_10PLAYER },                          -- 10 Player
+            { [9] = RAID_DIFFICULTY_40PLAYER },                          -- 40 Player
+            { [148] = RAID_DIFFICULTY_20PLAYER },                        -- 20 Player
+        }
+    elseif mrt.isCataclysm then
         items = {
             { [4] = RAID_DIFFICULTY_25PLAYER },                          -- 25 Player
             { [3] = RAID_DIFFICULTY_10PLAYER },                          -- 10 Player
@@ -898,6 +915,71 @@ function MRT_GUI_LootAdd()
     MRT_GUI_FourRowDialog_OKButton:SetText(MRT_L.GUI["Button_Add"]);
     MRT_GUI_FourRowDialog_OKButton:SetScript("OnClick", function() MRT_GUI_LootModifyAccept(raidnum, bossnum, nil); end);
     MRT_GUI_FourRowDialog_CancelButton:SetText(MRT_L.Core["MB_Cancel"]);
+    MRT_GUI_FourRowDialog:Show();
+end
+
+function MRT_GUI_LootAuction()
+    MRT_GUI_HideDialogs();
+    local raid_select = MRT_GUI_RaidLogTable:GetSelection();
+    if (raid_select == nil) then
+        MRT_Print(MRT_L.GUI["No raid selected"]);
+        return;
+    end
+    local loot_select = MRT_GUI_BossLootTable:GetSelection();
+    if (loot_select == nil) then
+        MRT_Print(MRT_L.GUI["No loot selected"]);
+        return;
+    end
+    local raidnum = MRT_GUI_RaidLogTable:GetCell(raid_select, 1);
+    local lootnum = MRT_GUI_BossLootTable:GetCell(loot_select, 1);
+    local bossnum = MRT_RaidLog[raidnum]["Loot"][lootnum]["BossNumber"];
+    local lootnote = MRT_RaidLog[raidnum]["Loot"][lootnum]["Note"];
+    -- Force item into cache:
+    GetItemInfo(MRT_RaidLog[raidnum]["Loot"][lootnum]["ItemLink"]);
+    -- gather playerdata and fill drop down menu
+    local playerData = {};
+    for i, val in ipairs(MRT_RaidLog[raidnum]["Bosskills"][bossnum]["Players"]) do
+        playerData[i] = { val };
+    end
+    table.sort(playerData, function(a, b) return (a[1] < b[1]); end );
+    tinsert(playerData, 1, { "disenchanted" } );
+    tinsert(playerData, 1, { "bank" } );
+    MRT_GUI_PlayerDropDownTable:SetData(playerData, true);
+    if (#playerData < 9) then
+        MRT_GUI_PlayerDropDownTable:SetDisplayRows(#playerData, 15);
+    else
+        MRT_GUI_PlayerDropDownTable:SetDisplayRows(9, 15);
+    end
+    MRT_GUI_PlayerDropDownTable.frame:Hide();
+    -- prepare dialog
+    MRT_GUI_FourRowDialog_Title:SetText(MRT_L.GUI["Modify loot data"]);
+    MRT_GUI_FourRowDialog_EB1_Text:SetText(MRT_L.GUI["Itemlink"]);
+    MRT_GUI_FourRowDialog_EB1:SetText(MRT_RaidLog[raidnum]["Loot"][lootnum]["ItemLink"]);
+    MRT_GUI_FourRowDialog_EB2_Text:SetText(MRT_L.GUI["Looter"]);
+    MRT_GUI_FourRowDialog_EB2:SetText(MRT_GUI_BossLootTable:GetCell(loot_select, 4));
+    MRT_GUI_FourRowDialog_EB3_Text:SetText(MRT_L.GUI["Value"]);
+    MRT_GUI_FourRowDialog_EB3:SetText(MRT_GUI_BossLootTable:GetCell(loot_select, 5));
+    MRT_GUI_FourRowDialog_EB4_Text:SetText(MRT_L.GUI["Note"]);
+
+	SendChatMessage("Bitte bieten für: " .. MRT_RaidLog[raidnum]["Loot"][lootnum]["ItemLink"], "RAID_WARNING");
+	local x=3 C_Timer.NewTicker(3, function(self) if x<0 then self:Cancel() else SendChatMessage(format((x>0 and "Bieten endet in %d" or "Ende"), x), "RAID_WARNING") end x=x-1 end)
+    if (lootnote == nil or lootnote == "" or lootnote == " ") then
+        MRT_GUI_FourRowDialog_EB4:SetText("");
+    else
+        MRT_GUI_FourRowDialog_EB4:SetText(lootnote);
+    end
+	
+	MRT_GUI_FourRowDialog_OKButton:SetText(MRT_L.GUI["Button_Modify"]);
+	MRT_GUI_FourRowDialog_OKButton:SetScript("OnClick", function() MRT_GUI_LootModifyAccept(raidnum, bossnum, lootnum); 
+    local kosten = MRT_GUI_FourRowDialog_EB3:GetText();
+	local notiz = MRT_GUI_FourRowDialog_EB4:GetText();	
+        if (MRT_RaidLog[raidnum]["Loot"][lootnum]["Looter"] == "disenchanted") then 
+			SendChatMessage("Gedisst", "RAID_WARNING")
+        else 
+            SendChatMessage("GZ " .. MRT_RaidLog[raidnum]["Loot"][lootnum]["Looter"] .. " für " .. kosten .. " " .. notiz, "RAID_WARNING")
+        end 
+     end);
+	MRT_GUI_FourRowDialog_CancelButton:SetText(MRT_L.Core["MB_Cancel"]);
     MRT_GUI_FourRowDialog:Show();
 end
 

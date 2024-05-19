@@ -523,6 +523,9 @@ function MRT_Initialize(frame)
     mrt.isRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE);
     mrt.isClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC);
     mrt.isBCC = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC);
+	mrt.isWotLK = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC);
+    mrt.isCataclysm = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC);
+
     -- Update settings and DB
     MRT_UpdateSavedOptions();
     MRT_VersionUpdate();
@@ -608,6 +611,10 @@ function MRT_UpdateSavedOptions()
             MRT_Options["Tracking_LogClassicRaids"] = true;
         elseif (mrt.isBCC) then
             MRT_Options["Tracking_LogBCRaids"] = true;
+		elseif (mrt.isWotLK) then
+            MRT_Options["Tracking_LogWotLKRaids"] = true;
+        elseif (mrt.isCataclysm) then
+            MRT_Options["Tracking_LogCataclysmRaids"] = true;
         end
     end
     if MRT_Options["General_OptionsVersion"] == 1 then
@@ -716,6 +723,20 @@ function MRT_UpdateSavedOptions()
             MRT_Options["Tracking_LogBCRaids"] = true;
         end
         MRT_Options["General_OptionsVersion"] = 21;
+    end
+	if MRT_Options["General_OptionsVersion"] == 21 then
+        -- Update for existing installations on WoW WotLK Classic: Force enable on first load
+        if (mrt.isWotLK) then
+            MRT_Options["Tracking_LogWotLKRaids"] = true;
+        end
+        MRT_Options["General_OptionsVersion"] = 22;
+    end
+    if MRT_Options["General_OptionsVersion"] == 22 then
+        -- Update for existing installations on WoW WotLK Classic: Force enable on first load
+        if (mrt.isCataclysm) then
+            MRT_Options["Tracking_LogCataclysmRaids"] = true;
+        end
+        MRT_Options["General_OptionsVersion"] = 22;
     end
 end
 
@@ -1481,7 +1502,7 @@ function MRT_AutoAddLootItem(playerName, itemLink, itemCount)
 	if (not playerName) then return; end
 	if (not itemLink) then return; end
 	if (not itemCount) then return; end
-    if ((mrt.isClassic or mrt.isBCC) and MRT_LootItemDupe(playerName, itemLink, itemCount)) then return; end
+    if ((mrt.isClassic or mrt.isBCC or mrt.isWotLK or mrt.isCataclysm) and MRT_LootItemDupe(playerName, itemLink, itemCount)) then return; end
 	MRT_Debug("MRT_AutoAddLootItem called - playerName: "..playerName.." - itemLink: "..itemLink.." - itemCount: "..itemCount);
     -- example itemLink: |cff9d9d9d|Hitem:7073:0:0:0:0:0:0:0|h[Broken Fang]|h|r (outdated!)
     local itemName, _, itemId, itemString, itemRarity, itemColor, itemLevel, _, itemType, itemSubType, _, _, _, _, itemClassID, itemSubClassID = MRT_GetDetailedItemInformation(itemLink);
@@ -2055,7 +2076,7 @@ function MRT_GetInstanceDifficulty()
     local _, _, iniDiff = GetInstanceInfo();
     -- handle non instanced territories as 40 player raids
     if (iniDiff == 0) then iniDiff = 9; end
-    if (mrt.isBCC) then
+    if (mrt.isBCC or mrt.isWotLK or mrt.isCataclysm) then
         if (iniDiff == 173) then iniDiff = 1; end
         if (iniDiff == 174) then iniDiff = 2; end
         if (iniDiff == 175) then iniDiff = 3; end
@@ -2071,7 +2092,7 @@ function MRT_GetInstanceInfo()
         difficultyID = 9;
         maxPlayers = 40;
     end
-    if (mrt.isBCC) then
+    if (mrt.isBCC or mrt.isWotLK or mrt.isCataclysm) then
         if (difficultyID == 173) then difficultyID = 1; end
         if (difficultyID == 174) then difficultyID = 2; end
         if (difficultyID == 175) then difficultyID = 3; end
