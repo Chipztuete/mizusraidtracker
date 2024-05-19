@@ -1,6 +1,6 @@
 ## Interface: 20502
 ## Title: Mizus RaidTracker
-## Version: @project-version@
+## Version: v0.92.0-bcc
 ## Notes: Tracks raid, loot and attendance
 ## Author: Mîzukichan@EU-Antonidas
 ## LoadOnDemand: 0

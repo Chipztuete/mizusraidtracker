@@ -1,4 +1,4 @@
-﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
  http://wowprogramming.com/FrameXML/UI.xsd">
   <Script file="MizusRaidTracker_GUI.lua"/>
   <EditBox name="MRT_GUI_Editbox_Template" inherits="InputBoxTemplate" virtual="true" historyLines="0" enableKeyboard="true" enableMouse="true" letters="400">
@@ -497,6 +497,13 @@
         <Scripts>
           <OnClick>MRT_GUI_LootModify();</OnClick>
           <OnEnter>MRT_GUI_SetTT(self, "Loot_Modify");</OnEnter>
+          <OnLeave>MRT_GUI_HideTT();</OnLeave>
+        </Scripts>
+      </Button>
+      <Button name="$parent_BossLoot_Auction_Button" inherits="MRT_GUI_Button_Template">
+        <Scripts>
+          <OnClick>MRT_GUI_LootAuction();</OnClick>
+          <OnEnter>MRT_GUI_SetTT(self, "Loot_Auction");</OnEnter>
           <OnLeave>MRT_GUI_HideTT();</OnLeave>
         </Scripts>
       </Button>

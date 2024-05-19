@@ -289,7 +289,7 @@ function mrt:UI_CreateTwoRowDDM()
             { [9] = RAID_DIFFICULTY_40PLAYER },                          -- 40 Player
             { [148] = RAID_DIFFICULTY_20PLAYER },                        -- 20 Player
         }
-        --added WotLK and Cata support here
+		-- hier gucken wenn scheiße mit hc
     elseif mrt.isWotLK then
         items = {
             { [4] = RAID_DIFFICULTY_25PLAYER },                          -- 25 Player

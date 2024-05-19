@@ -926,7 +926,7 @@ MRT_IgnoredItemIDList = {
     [45624] = true,     -- ...Conquest
     [47241] = true,     -- ...Triumph
     [49426] = true,     -- ...Frost
-	[29434] = true,		-- ...Justice										
+	[29434] = true,		-- Abzeichen der Gerechtigkeit
     
     -- Gems
     [36931] = true,     -- Ametrine
